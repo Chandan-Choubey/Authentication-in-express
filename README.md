@@ -1,6 +1,3 @@
-
-Certainly! Here’s an updated version of the README file with detailed steps for creating a MongoDB Atlas cluster, obtaining the connection string, and setting up the `.env` file:
-
 ```markdown
 # Team Management Application
 
@@ -217,13 +214,11 @@ This application is designed for managing teams and user roles. It includes feat
 
 5. **Create a Pull Request**
 
-## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contact
 
-If you have any questions, feel free to contact [your-email@example.com](mailto:your-email@example.com).
+If you have any questions, feel free to contact [choubeychandan2463@gmail.com](mailto:choubeychandan2463@gmail.com).
 ```
 
 This README file includes detailed instructions for setting up a MongoDB Atlas cluster, obtaining the connection string, and creating the `.env` files for both the backend and frontend. Adjust any specific details as necessary for your project.
