@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 const Navbar = () => {
   const user = useSelector((state) => state.user.user);
   const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
@@ -64,17 +65,21 @@ const Navbar = () => {
         </ul>
       </div>
       <div className="navbar-end">
-        {user?.role === "super-admin"
-          ? isLoggedIn && (
-              <Link to="/sign-up" className="btn">
-                Create User
-              </Link>
-            )
-          : isLoggedIn && (
-              <Link to="/profile" state={{ user }} className="btn">
-                {`Welcome ${user.name}`}
-              </Link>
-            )}
+        {isLoggedIn ? (
+          user?.role === "super-admin" ? (
+            <Link to="/sign-up" className="btn">
+              Create User
+            </Link>
+          ) : (
+            <Link to="/profile" state={{ user }} className="btn">
+              {`Welcome, ${user.name}`}
+            </Link>
+          )
+        ) : (
+          <Link to="/login" className="btn">
+            Login
+          </Link>
+        )}
       </div>
     </div>
   );

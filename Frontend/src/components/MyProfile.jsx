@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import { logout } from "../userSlice";
 
 const ProfilePage = () => {
-  const location = useLocation();
-  const { user } = location.state;
-  const [name, setName] = useState(user.name);
-  const [email, setEmail] = useState(user.email);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { state: { user } = {} } = useLocation();
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    console.log({ name, email });
     try {
       const response = await fetch("/api/v1/users/uprofile", {
         method: "PATCH",
@@ -26,6 +28,29 @@ const ProfilePage = () => {
       }
     } catch (error) {
       console.error("Error updating profile:", error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/v1/users/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        dispatch(logout());
+        alert("Logout Successful");
+        setName("");
+        setEmail("");
+        navigate("/login");
+      } else {
+        throw new Error("Failed to logout profile");
+      }
+    } catch (error) {
+      console.error("Error logout user:", error);
     }
   };
 
@@ -49,9 +74,7 @@ const ProfilePage = () => {
             id="name"
             name="name"
             value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
+            onChange={(e) => setName(e.target.value)}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
             required
           />
@@ -69,20 +92,27 @@ const ProfilePage = () => {
             id="email"
             name="email"
             value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
+            onChange={(e) => setEmail(e.target.value)}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
             required
           />
         </div>
 
-        <button
-          type="submit"
-          className="w-full text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-        >
-          Save Profile
-        </button>
+        <div className="flex justify-center gap-4">
+          <button
+            type="submit"
+            className="w-1/3 text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+          >
+            Save Profile
+          </button>
+          <button
+            type="button"
+            className="w-1/3 text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
       </form>
     </div>
   );

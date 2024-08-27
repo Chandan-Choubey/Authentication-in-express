@@ -24,61 +24,86 @@ import {
 
 const router = Router();
 
-router
-  .route("/register")
-  .post(verifyJWT, authorizeRole(["super-admin", "admin"]), registerUser);
-router.route("/login").post(loginUser);
-router.route("/logout").post(verifyJWT, logout);
-router
-  .route("/getUsers")
-  .post(
-    verifyJWT,
-    authorizeRole(["super-admin", "admin", "manager"]),
-    getUsers
-  );
-router
-  .route("/delete/:id")
-  .delete(verifyJWT, authorizeRole(["super-admin", "admin"]), deleteUser);
-router
-  .route("/role/:id")
-  .post(verifyJWT, authorizeRole(["super-admin", "admin"]), assignRole);
+// User Routes
+router.post(
+  "/register",
+  verifyJWT,
+  authorizeRole(["super-admin", "admin"]),
+  registerUser
+);
+router.post("/login", loginUser);
+router.post("/logout", verifyJWT, logout);
+router.post(
+  "/getUsers",
+  verifyJWT,
+  authorizeRole(["super-admin", "admin", "manager"]),
+  getUsers
+);
+router.delete(
+  "/delete/:id",
+  verifyJWT,
+  authorizeRole(["super-admin", "admin"]),
+  deleteUser
+);
+router.post(
+  "/role/:id",
+  verifyJWT,
+  authorizeRole(["super-admin", "admin"]),
+  assignRole
+);
+router.post(
+  "/edit/:id",
+  verifyJWT,
+  authorizeRole(["super-admin", "admin"]),
+  editUser
+);
+router.patch(
+  "/uprofile",
+  verifyJWT,
+  authorizeRole(["normal-user"]),
+  updateProfile
+);
+router.patch(
+  "/upass",
+  verifyJWT,
+  authorizeRole(["normal-user"]),
+  updatePassword
+);
+router.get("/profile", verifyJWT, authorizeRole(["normal-user"]), whoAmI);
 
-router
-  .route("/edit/:id")
-  .post(verifyJWT, authorizeRole(["super-admin", "admin"]), editUser);
+// Team Routes
+router.post("/create-team", verifyJWT, authorizeRole(["manager"]), createTeam);
+router.get("/get-team", verifyJWT, authorizeRole(["manager"]), getAllTeam);
+router.get("/get-team/:id", verifyJWT, authorizeRole(["manager"]), getTeam);
+router.delete(
+  "/delete-team/:id",
+  verifyJWT,
+  authorizeRole(["manager"]),
+  deleteTeam
+);
+router.post(
+  "/add-user-to-team/:teamId/:userId",
+  verifyJWT,
+  authorizeRole(["manager"]),
+  addUserToTeam
+);
+router.delete(
+  "/remove-user-from-team/:teamId/:userId",
+  verifyJWT,
+  authorizeRole(["manager"]),
+  removeUserFromTeam
+);
+router.post(
+  "/user-with-team",
+  verifyJWT,
+  authorizeRole(["manager"]),
+  userWithTeam
+);
+router.get(
+  "/member-of-team/:teamId/:userId",
+  verifyJWT,
+  authorizeRole(["manager"]),
+  isAlreadyMemberOfTeam
+);
 
-router
-  .route("/uprofile")
-  .patch(verifyJWT, authorizeRole(["normal-user"]), updateProfile);
-router
-  .route("/upass")
-  .patch(verifyJWT, authorizeRole(["normal-user"]), updatePassword);
-
-router.route("/profile").get(verifyJWT, authorizeRole(["normal-user"]), whoAmI);
-router
-  .route("/create-team")
-  .post(verifyJWT, authorizeRole(["manager"]), createTeam);
-router
-  .route("/get-team")
-  .get(verifyJWT, authorizeRole(["manager"]), getAllTeam);
-router
-  .route("/get-team/:id")
-  .get(verifyJWT, authorizeRole(["manager"]), getTeam);
-router
-  .route("/delete-team/:id")
-  .delete(verifyJWT, authorizeRole(["manager"]), deleteTeam);
-router
-  .route("/add-user-to-team/:teamId/:userId")
-  .post(verifyJWT, authorizeRole(["manager"]), addUserToTeam);
-router
-  .route("/remove-user-from-team/:teamId/:userId")
-  .delete(verifyJWT, authorizeRole(["manager"]), removeUserFromTeam);
-
-router
-  .route("/user-with-team")
-  .post(verifyJWT, authorizeRole(["manager"]), userWithTeam);
-
-router
-  .route("/member-of-team/:teamId/:userId")
-  .get(verifyJWT, authorizeRole(["manager"]), isAlreadyMemberOfTeam);
 export default router;

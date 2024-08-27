@@ -8,7 +8,7 @@ const Manager = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchTeam = async () => {
+  const fetchTeam = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch("/api/v1/users/user-with-team", {
@@ -19,18 +19,15 @@ const Manager = () => {
       });
       const data = await response.json();
       setTeam(data);
-    } catch (err) {
+    } catch {
       setError("Failed to fetch team data");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleDeleteTeamMember = useCallback(async (memberId, teamId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to remove this team member?"
-    );
-    if (confirmed) {
+    if (window.confirm("Are you sure you want to remove this team member?")) {
       try {
         await fetch(
           `/api/v1/users/remove-user-from-team/${teamId}/${memberId}`,
@@ -50,26 +47,17 @@ const Manager = () => {
               : team
           )
         );
-      } catch (err) {
+      } catch {
         setError("Failed to remove the team member");
       }
     }
   }, []);
 
   useEffect(() => {
-    if (team.length === 0) {
-      fetchTeam();
-    }
-  }, [team]);
+    if (!team.length) fetchTeam();
+  }, [fetchTeam, team.length]);
 
-  const teamDataWithDetails = useMemo(
-    () =>
-      team.map((teamData) => ({
-        ...teamData,
-        membersDetails: teamData.membersDetails,
-      })),
-    [team]
-  );
+  const teamDataWithDetails = useMemo(() => team, [team]);
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -89,38 +77,35 @@ const Manager = () => {
               </tr>
             </thead>
             <tbody>
-              {teamDataWithDetails.map((teamData) => (
-                <React.Fragment key={teamData._id}>
-                  {teamData.membersDetails.length > 0 &&
-                    teamData.membersDetails.map((member) => (
-                      <tr key={member._id} className="text-xl">
-                        <td className="px-4 py-2">{member.name}</td>
-                        <td className="px-4 py-2">{member.email}</td>
-                        <td className="px-4 py-2">{member.role}</td>
-                        <td className="px-4 py-2">{teamData.name}</td>
-                        <td className="px-4 py-2">
-                          <Link
-                            to={`/add-team-member/${member._id}`}
-                            state={{ teamData }}
-                            className="text-blue-600 hover:underline cursor-pointer"
-                          >
-                            Add
-                          </Link>
-                        </td>
-                        <td className="px-4 py-2">
-                          <span
-                            onClick={() =>
-                              handleDeleteTeamMember(member._id, teamData._id)
-                            }
-                            className="text-red-600 hover:underline cursor-pointer"
-                          >
-                            Remove
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                </React.Fragment>
-              ))}
+              {teamDataWithDetails.map((teamData) =>
+                teamData.membersDetails.map((member) => (
+                  <tr key={member._id} className="text-xl">
+                    <td className="px-4 py-2">{member.name}</td>
+                    <td className="px-4 py-2">{member.email}</td>
+                    <td className="px-4 py-2">{member.role}</td>
+                    <td className="px-4 py-2">{teamData.name}</td>
+                    <td className="px-4 py-2">
+                      <Link
+                        to={`/add-team-member/${member._id}`}
+                        state={{ teamData }}
+                        className="text-blue-600 hover:underline"
+                      >
+                        Add
+                      </Link>
+                    </td>
+                    <td className="px-4 py-2">
+                      <span
+                        onClick={() =>
+                          handleDeleteTeamMember(member._id, teamData._id)
+                        }
+                        className="text-red-600 hover:underline cursor-pointer"
+                      >
+                        Remove
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

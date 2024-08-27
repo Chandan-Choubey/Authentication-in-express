@@ -15,11 +15,15 @@ function NormalUser() {
             "Content-Type": "application/json",
           },
         });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+
         const data = await response.json();
-        console.log(data);
         setUser(data.data);
       } catch (err) {
-        setError("Failed to fetch user data");
+        setError(err.message || "Failed to fetch user data");
       } finally {
         setLoading(false);
       }
@@ -33,17 +37,17 @@ function NormalUser() {
 
   return (
     <div className="flex justify-center align-middle h-[50vh]">
-      <div className="card bg-primary text-primary-content w-96 ">
+      <div className="card bg-primary text-primary-content w-96">
         <div className="card-body">
-          <h2 className="card-title py-4">{user.name}'s Profile</h2>
+          <h2 className="card-title py-4">{user?.name}'s Profile</h2>
           <p>
-            <strong>Name:</strong> {user.name}
+            <strong>Name:</strong> {user?.name || "N/A"}
           </p>
           <p>
-            <strong>Email:</strong> {user.email}
+            <strong>Email:</strong> {user?.email || "N/A"}
           </p>
           <p>
-            <strong>Role:</strong> {user.role}
+            <strong>Role:</strong> {user?.role || "N/A"}
           </p>
           <div className="card-actions justify-end">
             <Link className="btn" state={{ user }} to="/profile">

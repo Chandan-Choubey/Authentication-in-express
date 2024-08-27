@@ -2,7 +2,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const SignupPage = () => {
-  const { navigate } = useNavigate();
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -10,28 +11,33 @@ const SignupPage = () => {
     const name = formData.get("name");
     const email = formData.get("email");
     const password = formData.get("password");
-    const role = formData.get("role");
+    const role = formData.get("role") || "normal-user";
     const userData = { name, email, password, role };
-    console.log(userData);
 
-    const user = await fetch("/api/v1/users/register", {
-      method: "POST",
-      body: JSON.stringify(userData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    try {
+      const user = await fetch("/api/v1/users/register", {
+        method: "POST",
+        body: JSON.stringify(userData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    const data = await user.json();
-    console.log("Server Response:", data);
+      const data = await user.json();
 
-    if (user.ok) {
-      navigate("/super-admin");
-      console.log("Login successful:", data);
-    } else {
-      console.error("Login failed:", data);
+      if (user.ok) {
+        navigate("/super-admin");
+        console.log("Signup successful:", data);
+      } else {
+        console.error("Signup failed:", data);
+        alert(data.message || "Signup failed! Please try again.");
+      }
+    } catch (error) {
+      console.error("Error occurred during signup:", error);
+      alert("Something went wrong. Please try again later.");
     }
   };
+
   return (
     <div className="flex justify-center items-center h-screen">
       <form onSubmit={handleSubmit} className="max-w-lg w-full mx-auto">
@@ -89,10 +95,11 @@ const SignupPage = () => {
           >
             Role
           </label>
-          <select name="role" className="select select-ghost w-full max-w-xs">
-            <option disabled value="normal-user">
-              Normal User
-            </option>
+          <select
+            name="role"
+            className="select select-ghost w-full max-w-xs"
+            defaultValue="normal-user" // Set a default value for the role
+          >
             <option value="super-admin">Super Admin</option>
             <option value="admin">Admin</option>
             <option value="manager">Manager</option>

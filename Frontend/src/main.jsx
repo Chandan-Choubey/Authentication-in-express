@@ -5,7 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LoginPage from "./components/LoginPage.jsx";
 import SignupPage from "./components/SignupPage.jsx";
 import SuperAdmin from "./components/SuperAdmin.jsx";
-import Manager from "./components/Manger.jsx";
+import Manager from "./components/Manager.jsx";
 import NormalUser from "./components/NormalUser.jsx";
 import { Provider } from "react-redux";
 import { store } from "./store.js";

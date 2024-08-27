@@ -4,50 +4,54 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../userSlice";
 
 const LoginPage = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const formData = new FormData(e.target);
-    const email = formData.get("email");
-    const password = formData.get("password");
-    const userData = { email, password };
-    console.log(userData);
+    const userData = {
+      email: formData.get("email"),
+      password: formData.get("password"),
+    };
 
-    const user = await fetch("/api/v1/users/login", {
-      method: "POST",
-      body: JSON.stringify(userData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    try {
+      const response = await fetch("/api/v1/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      });
 
-    const data = await user.json();
-    console.log("Server Response:", data);
+      const data = await response.json();
 
-    if (user.ok) {
-      dispatch(login(data.data.user));
-      console.log("Login successful:", data.data.user);
-      const { role } = data.data.user;
-      console.log("Role:", role);
+      if (response.ok) {
+        dispatch(login(data.data.user));
+        const { role } = data.data.user;
 
-      if (role === "super-admin") {
-        navigate("/super-admin");
+        switch (role) {
+          case "super-admin":
+            navigate("/super-admin");
+            break;
+          case "admin":
+            navigate("/admin");
+            break;
+          case "manager":
+            navigate("/manager");
+            break;
+          case "normal-user":
+            navigate("/normal-user");
+            break;
+          default:
+            break;
+        }
+      } else {
+        console.error("Login failed:", data.message || "Unknown error");
       }
-      if (role === "admin") {
-        navigate("/admin");
-      }
-      if (role === "manager") {
-        navigate("/manager");
-      }
-      if (role === "normal-user") {
-        navigate("/normal-user");
-      }
-    } else {
-      console.error("Login failed:", data);
+    } catch (error) {
+      console.error("Error during login:", error);
     }
   };
+
   return (
     <div className="flex justify-center items-center h-screen">
       <form onSubmit={handleSubmit} className="max-w-lg w-full mx-auto">

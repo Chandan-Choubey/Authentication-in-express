@@ -1,37 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const EditUser = () => {
-  const loggedInuser = useSelector((state) => state.user.user);
   const { id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
+  const loggedInuser = useSelector((state) => state.user.user);
   const { user } = location.state || {};
-  console.log(user);
+
   const [userData, setUserData] = useState({
     name: user?.name || "",
     email: user?.email || "",
     role: user?.role || "normal-user",
   });
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    setUserData({
+      name: user?.name || "",
+      email: user?.email || "",
+      role: user?.role || "normal-user",
+    });
+  }, [user]);
 
   const handleInputChange = (e) => {
-    setUserData({
-      ...userData,
+    setUserData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     await fetch(`/api/v1/users/edit/${id}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userData),
     });
-
     navigate("/super-admin");
   };
 
@@ -74,8 +79,7 @@ const EditUser = () => {
             required
           />
         </div>
-
-        {loggedInuser.role === "super-admin" ? (
+        {loggedInuser.role === "super-admin" && (
           <div className="mb-5">
             <label
               htmlFor="role"
@@ -96,10 +100,7 @@ const EditUser = () => {
               <option value="normal-user">Normal User</option>
             </select>
           </div>
-        ) : (
-          ""
         )}
-
         <button
           type="submit"
           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
