@@ -19,7 +19,7 @@ This application is designed for managing teams and user roles. It includes feat
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/your-repository.git
+   [git clone https://github.com/yourusername/your-repository.git](https://github.com/Chandan-Choubey/Authentication-in-express)
    ```
 
 2. **Navigate to the backend directory:**
